@@ -5,6 +5,10 @@ on:
     - cron: "0 9 * * *"
   workflow_dispatch:
 
+permissions:
+  contents: read
+  issues: write
+
 jobs:
   check-bws:
     runs-on: ubuntu-latest
@@ -27,7 +31,7 @@ jobs:
           fi
 
           # Check if an issue already exists
-          existing=$(gh issue list --search "Update bws to $latest" --json number --jq '.[0].number')
+          existing=$(gh issue list --state all --search "Update bws to $latest in:title" --json number --jq '.[0].number // empty')
           if [ -n "$existing" ]; then
             echo "Issue #$existing already exists"
             exit 0
