@@ -1,0 +1,49 @@
+name: Check Formula Updates
+
+on:
+  schedule:
+    - cron: "0 9 * * *"
+  workflow_dispatch:
+
+jobs:
+  check-bws:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check for new bws release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          current=$(grep -oP 'version "\K[^"]+' Formula/bws.rb)
+          latest=$(gh api repos/bitwarden/sdk-sm/releases/latest --jq '.tag_name' | sed 's/^bws-v//')
+
+          echo "Current: $current"
+          echo "Latest:  $latest"
+
+          if [ "$current" = "$latest" ]; then
+            echo "Already up to date"
+            exit 0
+          fi
+
+          # Check if an issue already exists
+          existing=$(gh issue list --search "Update bws to $latest" --json number --jq '.[0].number')
+          if [ -n "$existing" ]; then
+            echo "Issue #$existing already exists"
+            exit 0
+          fi
+
+          gh issue create \
+            --title "Update bws to $latest" \
+            --body "$(cat <<EOF
+          A new version of [bws](https://github.com/bitwarden/sdk-sm) has been released.
+
+          - **Current version:** $current
+          - **Latest version:** $latest
+          - **Release:** https://github.com/bitwarden/sdk-sm/releases/tag/bws-v$latest
+
+          ### To update
+          1. Update \`version\` in \`Formula/bws.rb\`
+          2. Download each platform zip and update the \`sha256\` values
+          EOF
+          )"
