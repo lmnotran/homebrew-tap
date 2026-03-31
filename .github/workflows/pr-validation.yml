@@ -37,6 +37,7 @@ jobs:
       - name: Install and test formulas
         run: |
           for formula in ${{ steps.changed.outputs.formulas }}; do
-            brew install "lmnotran/tap/$formula"
+            brew install --force "lmnotran/tap/$formula"
             brew test "lmnotran/tap/$formula"
+            brew unlink "lmnotran/tap/$formula"
           done
