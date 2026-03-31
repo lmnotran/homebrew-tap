@@ -3,6 +3,11 @@ class BwsAT2 < Formula
   homepage "https://bitwarden.com/help/secrets-manager-cli/"
   license "GPL-3.0-only"
 
+  livecheck do
+    url :stable
+    regex(/^bws-v?(\d+(?:\.\d+)+)$/i)
+  end
+
   on_macos do
     if Hardware::CPU.arm?
       url "https://github.com/bitwarden/sdk-sm/releases/download/bws-v2.0.0/bws-aarch64-apple-darwin-2.0.0.zip"
@@ -28,6 +33,6 @@ class BwsAT2 < Formula
   end
 
   test do
-    assert_match "bws #{version}", shell_output("#{bin}/bws --version")
+    assert_match version.to_s, shell_output("#{bin}/bws --version")
   end
 end
