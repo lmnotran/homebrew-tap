@@ -41,3 +41,18 @@ jobs:
             brew test "lmnotran/tap/$formula"
             brew unlink "lmnotran/tap/$formula"
           done
+
+      - name: Verify aliases
+        run: |
+          for alias in Aliases/*; do
+            [ -L "$alias" ] || continue
+            name=$(basename "$alias")
+            target=$(basename "$(readlink "$alias")" .rb)
+            installed=$(brew info "lmnotran/tap/$name" --json=v1 | jq -r '.[0].full_name')
+            expected="lmnotran/tap/$target"
+            if [ "$installed" != "$expected" ]; then
+              echo "::error::Alias $name should resolve to $expected but got $installed"
+              exit 1
+            fi
+            echo "✓ $name -> $expected"
+          done
