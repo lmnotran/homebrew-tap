@@ -1,6 +1,9 @@
 name: PR Validation
 
 on:
+  push:
+    paths:
+      - "Formula/*.rb"
   pull_request:
     paths:
       - "Formula/*.rb"
@@ -17,7 +20,12 @@ jobs:
       - name: Get changed formulas
         id: changed
         run: |
-          formulas=$(git diff --name-only ${{ github.event.pull_request.base.sha }} ${{ github.sha }} -- 'Formula/*.rb' | xargs -I{} basename {} .rb | tr '\n' ' ')
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            base="${{ github.event.pull_request.base.sha }}"
+          else
+            base="${{ github.event.before }}"
+          fi
+          formulas=$(git diff --name-only "$base" "${{ github.sha }}" -- 'Formula/*.rb' | xargs -I{} basename {} .rb | tr '\n' ' ')
           echo "formulas=$formulas" >> "$GITHUB_OUTPUT"
 
       - name: Audit formulas
