@@ -1,0 +1,34 @@
+name: PR Validation
+
+on:
+  pull_request:
+    paths:
+      - "Formula/*.rb"
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Homebrew
+        uses: Homebrew/actions/setup-homebrew@master
+
+      - name: Get changed formulas
+        id: changed
+        run: |
+          formulas=$(git diff --name-only ${{ github.event.pull_request.base.sha }} ${{ github.sha }} -- 'Formula/*.rb' | xargs -I{} basename {} .rb | tr '\n' ' ')
+          echo "formulas=$formulas" >> "$GITHUB_OUTPUT"
+
+      - name: Audit formulas
+        run: |
+          for formula in ${{ steps.changed.outputs.formulas }}; do
+            brew audit --strict "lmnotran/tap/$formula"
+          done
+
+      - name: Install and test formulas
+        run: |
+          for formula in ${{ steps.changed.outputs.formulas }}; do
+            brew install "lmnotran/tap/$formula"
+            brew test "lmnotran/tap/$formula"
+          done
