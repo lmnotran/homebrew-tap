@@ -41,3 +41,17 @@ brew link bws@1
 brew unlink bws@1
 brew link bws
 ```
+
+## Maintainer workflow
+
+When updating a formula:
+
+1. Update all platform-specific URLs and `sha256` values.
+2. Run:
+
+```sh
+brew livecheck --formula <formula>
+brew audit --strict <formula>
+brew install --build-from-source <formula>
+brew test <formula>
+```
