@@ -1,0 +1,25 @@
+name: Install All Formulas
+
+on:
+  schedule:
+    - cron: "0 9 * * 1"
+  workflow_dispatch:
+
+jobs:
+  install:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Homebrew
+        uses: Homebrew/actions/setup-homebrew@master
+
+      - name: Install and test all formulas
+        run: |
+          for file in Formula/*.rb; do
+            formula=$(basename "$file" .rb)
+            echo "::group::$formula"
+            brew install "lmnotran/tap/$formula"
+            brew test "lmnotran/tap/$formula"
+            echo "::endgroup::"
+          done
