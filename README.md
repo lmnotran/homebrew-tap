@@ -12,7 +12,9 @@ brew tap lmnotran/tap
 
 | Formula | Description |
 |---------|-------------|
-| `bws` | [Bitwarden Secrets Manager CLI](https://bitwarden.com/help/secrets-manager-cli/) |
+| `bws` | Alias for the latest major version (currently `bws@2`) |
+| `bws@2` | [Bitwarden Secrets Manager CLI](https://bitwarden.com/help/secrets-manager-cli/) v2.x |
+| `bws@1` | [Bitwarden Secrets Manager CLI](https://bitwarden.com/help/secrets-manager-cli/) v1.x |
 
 ### Installing a formula
 
@@ -24,4 +26,18 @@ For example:
 
 ```sh
 brew install lmnotran/tap/bws
+```
+
+### Switching between versions
+
+If you have multiple versions installed, use `brew link` to select which one is active:
+
+```sh
+# Switch to bws@1
+brew unlink bws
+brew link bws@1
+
+# Switch back to latest
+brew unlink bws@1
+brew link bws
 ```
