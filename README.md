@@ -19,12 +19,6 @@ brew tap lmnotran/tap
 ### Installing a formula
 
 ```sh
-brew install lmnotran/tap/<formula>
-```
-
-For example:
-
-```sh
 brew install lmnotran/tap/bws
 ```
 
@@ -50,8 +44,9 @@ When updating a formula:
 2. Run:
 
 ```sh
-brew livecheck --formula <formula>
-brew audit --strict <formula>
-brew install --build-from-source <formula>
-brew test <formula>
+export FORMULA=lmnotran/tap/bws
+brew livecheck --formula $FORMULA
+brew audit --strict $FORMULA
+brew install --build-from-source $FORMULA
+brew test $FORMULA
 ```
